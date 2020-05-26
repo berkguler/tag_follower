@@ -85,7 +85,7 @@ if __name__ == '__main__':
 		rospy.init_node("tag_follower")
 		msg = rospy.wait_for_message("/ar_pose_marker",AlvarMarkers,timeout=None)
 		rospy.loginfo("bunu goruyon mu gotelek")
-		# teleop_process
+		teleop_process
 		getBox(msg)
 		if(goal_found):
 			result = movebase_client(goal)
