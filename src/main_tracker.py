@@ -9,7 +9,7 @@ from geometry_msgs.msg import Twist, Point, Quaternion
 from ar_track_alvar_msgs.msg import AlvarMarkers
 from tf.transformations import euler_from_quaternion
 from move_base_msgs.msg import MoveBaseAction, MoveBaseGoal
-import teleop
+from teleop import process as teleop_process
 
 goal_found = False
 
@@ -84,8 +84,8 @@ if __name__ == '__main__':
 	try:
 		rospy.init_node("tag_follower")
 		msg = rospy.wait_for_message("/ar_pose_marker",AlvarMarkers,timeout=None)
-		
 		rospy.loginfo("bunu goruyon mu gotelek")
+		# teleop_process
 		getBox(msg)
 		if(goal_found):
 			result = movebase_client(goal)

@@ -44,7 +44,7 @@ def on_release(key):
         print("quit on PAUSE")
         return False
 
-if __name__=='__main__':
+def process():
 	rospy.init_node ("tag_follower")
 	move = rospy.Publisher("/husky_velocity_controller/cmd_vel",Twist, queue_size = 10 )
 	rate = rospy.Rate(100)
@@ -59,3 +59,6 @@ if __name__=='__main__':
 		speed.angular.z = velocity.z
 		move.publish(speed)
 		rate.sleep()
+		
+if __name__=='__main__':
+	process()
