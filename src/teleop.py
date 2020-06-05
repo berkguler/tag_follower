@@ -44,7 +44,9 @@ def on_release(key):
         print("quit on PAUSE")
         return False
 
-def process():
+
+
+if __name__=='__main__':
 	rospy.init_node ("tag_follower")
 	move = rospy.Publisher("/husky_velocity_controller/cmd_vel",Twist, queue_size = 10 )
 	rate = rospy.Rate(100)
@@ -52,13 +54,10 @@ def process():
 	velocity = Point()
 	listener = Listener(on_press=on_press, on_release=on_release, suppress=False)
 	listener.start()	
-	#print("A Hybrid Mobile Manipulator Teleop Interface\n------------------------------------------------------------\n\t\tUp Arrow\n\t\tLinear Speed Up\nLeft Arrow\t\tDown Arrow\t\tRight Arrow\nTurn Left\t\tLinear Speed Down\t\tTurn Right\n\nCtrl_r\t\tStop\nShift_l\t\increase incrementation\nCtrl_l\t\treduce incrementation\nShift_r\t\tReset incrementation\n\n")
+	print("A Hybrid Mobile Manipulator Teleop Interface\n------------------------------------------------------------\n\t\tUp Arrow\n\t\tLinear Speed Up\nLeft Arrow\t\tDown Arrow\t\tRight Arrow\nTurn Left\t\tLinear Speed Down\t\tTurn Right\n\nCtrl_r\t\tStop\nShift_l\t\increase incrementation\nCtrl_l\t\treduce incrementation\nShift_r\t\tReset incrementation\n\n")
 	while listener.running and not rospy.is_shutdown():
 		rospy.loginfo(speed)
 		speed.linear.x = velocity.x
 		speed.angular.z = velocity.z
 		move.publish(speed)
 		rate.sleep()
-		
-if __name__=='__main__':
-	process()

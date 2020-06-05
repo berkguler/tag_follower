@@ -1,0 +1,15 @@
+# if 1 in readed_markers:
+# 	goal_found = True
+# 	target_index = readed_markers.index(1
+# 	goal.target_pose.header.frame_id = "map"
+# 	goal.target_pose.header.stamp = rospy.Time.now()
+# 	goal.target_pose.pose.position.x = marker_list[target_index].x
+# 	goal.target_pose.pose.position.y = marker_list[target_index].y
+#  	goal.target_pose.pose.position.z = marker_list[target_index].z
+# 	goal.target_pose.pose.orientation.x = marker_list[target_index].yaw
+# 	goal.target_pose.pose.orientation.y = -1*marker_list[target_index].p
+# 	goal.target_pose.pose.orientation.z = marker_list[target_index].r
+# 	goal.target_pose.pose.orientation.w = marker_list[target_index].w
+# 	print(goal)
+# else: 
+# 	goal = MoveBaseGoal()
