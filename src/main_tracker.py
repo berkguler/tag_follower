@@ -176,7 +176,6 @@ class TagFollower:
 		print(self.readed_markers)
 		  	
 
-
 def movebase_client(target_goal):
 	# Create an action client called "move_base" with action definition file "MoveBaseAction"
 	client = actionlib.SimpleActionClient('move_base',MoveBaseAction)
