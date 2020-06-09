@@ -49,7 +49,7 @@ class TagFollower:
 			for i in range(0,len(msg.markers)):
 				""" Each readed tags """
 				print("%d - %.2f - %.2f - %.2f // %.2f - %.2f - %.2f - %.2f"%(msg.markers[i].id,msg.markers[i].pose.pose.position.x,msg.markers[i].pose.pose.position.y,msg.markers[i].pose.pose.position.z,msg.markers[i].pose.pose.orientation.x,msg.markers[i].pose.pose.orientation.y,msg.markers[i].pose.pose.orientation.z,msg.markers[i].pose.pose.orientation.w))
-				if not msg.markers[i].id in self.readed_markers:
+				if True or not msg.markers[i].id  in self.readed_markers: # true to bypass condition
 					""" Has it been readed? """
 					self.readed_markers.append(msg.markers[i].id) # add readed_markers list
 					self.tag_frame = "/ar_marker_" + str(msg.markers[i].id) # create the frame
@@ -59,29 +59,28 @@ class TagFollower:
 						msg.markers[i].pose.pose.orientation.z,
 						msg.markers[i].pose.pose.orientation.w
 					)
-					
 					self.old_offset = (
 						msg.markers[i].pose.pose.position.x,
 						msg.markers[i].pose.pose.position.y,
 						msg.markers[i].pose.pose.position.z,
 					)
 
-					self.new_translation, self.new_quaternion =  self.RotateTags(self.old_offset,self.old_quaternion,'x')
-
+					self.new_translation, self.new_quaternion =  self.RotateTags(self.old_offset,self.old_quaternion,'x') # -90 degree rotation around x axis
 
 					self.marker_list.append(TagClass(msg.markers[i].id,self.new_translation[0],self.new_translation[1],self.new_translation[2],self.new_quaternion[0],self.new_quaternion[1],self.new_quaternion[2],self.new_quaternion[3]))
 					self.readed_markers_tf.append(self.moveARtag2Base(self.tag_frame))
-
 					self.getTagFrame(self.tag_frame)
 
 	def RotateTags(self,translation,orientation,axis):
 		if axis == 'y':
 			self.rotation_matrix =  np.array([0,0,-1,0,1,0,1,0,0]).reshape(3,3) #-90 degree about the y axis
 		elif axis == 'x':
-			self.rotation_matrix =  np.array([1,0,0,0,0,1,0,-1,0]).reshape(3,3) #90 degree about the x axis
+			self.rotation_matrix =  np.array([1,0,0,0,0,-1,0,1,0]).reshape(3,3) #-90 degree about the x axis
+
 		self.converted_trans = np.dot(self.rotation_matrix,np.asarray(translation).reshape(3,1))
 		self.converted_euler = np.dot(self.rotation_matrix,np.asarray(tf.transformations.euler_from_quaternion(orientation)).reshape(3,1))
 		self.converted_quaternion = tf.transformations.quaternion_from_euler(self.converted_euler[0], self.converted_euler[1],self.converted_euler[2])
+		print("Rotation: \n")
 		print("Translation %s\n------------------------"%axis)
 		print(translation)
 		print(self.converted_trans)
@@ -101,7 +100,7 @@ class TagFollower:
 			homo_matrix[2][3] = trans[2]
 			print(homo_matrix)
 			print(tf.transformations.euler_from_quaternion(rot))
-			print("\n")
+			print("-------------------above Husky pose --------------------------------- \n")
 			return (trans,rot,homo_matrix)
 			
 		except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
@@ -114,7 +113,7 @@ class TagFollower:
 			print("\n%s  tag frame Detected!"%tagFrame)
 			print(trans)
 			print(tf.transformations.euler_from_quaternion(rot))
-			
+
 			new_trans, new_rot = self.RotateTags(trans,rot,'x')
 			homo_matrix = tf.transformations.quaternion_matrix(new_rot)
 			homo_matrix[0][3] = new_trans[0]
@@ -155,7 +154,7 @@ class TagFollower:
 					rospy.loginfo("There is nothing to follow")
 	
 	def search(self):
-		self.waypoints = [(0,-2, 0),(0,2,math.pi),(0,-2,math.pi),(0,2,0),(0,0,0)]
+		self.waypoints = [(0,2,math.pi),(0,-2,math.pi),(0,2,0),(1,-2, 0),(0,0,0)]
 		for point in self.waypoints:
 			self.goal.target_pose.header.frame_id = "map"
 			self.goal.target_pose.header.stamp = rospy.Time.now()
@@ -208,7 +207,13 @@ def getLaser(laser_msg):
 	# values at 0 degree
 	print laser_msg.ranges[0]
 	# values at 90 degree
+	print laser_msg.ranges[357]
+	print laser_msg.ranges[358]
+	print laser_msg.ranges[359]
 	print laser_msg.ranges[360]
+	print laser_msg.ranges[361]
+	print laser_msg.ranges[362]
+	print laser_msg.ranges[363]
 	# values at 180 degree
 	print laser_msg.ranges[719]
 
@@ -219,24 +224,22 @@ if __name__ == '__main__':
 		move = rospy.Publisher("/husky_velocity_controller/cmd_vel",Twist, queue_size = 10 )
 		tagMonster = TagFollower()
 		while not rospy.is_shutdown():
-			choice = int(raw_input("What do you want?\n(-1) - break \n(1) - scan tags \n(2) - go-to-goal\n(3) - follow tag \n:"))
+			choice = int(raw_input("What do you want?\n(-1) - break \n(1) - scan tags \n(2) - go-to-goal\n(3) - follow tag \n(4) - getHuskyPose \n(5) - read laser \n(6) - scan tag \n:"))
 			if choice == 1:
-				#scan Laser
-				laser_msg = rospy.wait_for_message("/robot_arm/laser/scan",LaserScan)
-				getLaser(laser_msg)
 				tagMonster.search()
-				
 			elif choice == 2:
 				x = float(raw_input("x: "))
 				y = float(raw_input("y: "))
 				random_walk(x,y)
 				tagMonster.tagScan()
 			elif choice == 3:
-
 				tagMonster.gotoBox()
 			elif choice == 4:
 				tagMonster.getHuskyPose()
-			elif choice == 9:
+			elif choice == 5:
+				laser_msg = rospy.wait_for_message("/scan",LaserScan)
+				getLaser(laser_msg)
+			elif choice == 6:
 				tagMonster.tagScan()
 			elif choice == -1:
 				break
