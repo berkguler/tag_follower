@@ -175,7 +175,6 @@ class TagFollower:
 			self.tagScan()
 		print(self.readed_markers)
 		  	
-			  #bok
 
 def movebase_client(target_goal):
 	# Create an action client called "move_base" with action definition file "MoveBaseAction"
