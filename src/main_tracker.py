@@ -1,5 +1,5 @@
  #!/usr/bin/env python
-import cluster
+import fusion
 
 import rospy
 import tf
