@@ -1,4 +1,4 @@
- #!/usr/bin/env python
+#!/usr/bin/env python
 import rospy
 import tf
 import actionlib
@@ -153,7 +153,7 @@ if __name__ == '__main__':
 	r = rospy.Rate(1)
 	matcher = TagMatcher()
 	matcher.calibrate_dance()
-	while not rospy.is_shutdown():
-		matcher.Fusion()
-		r.sleep()
+	# while not rospy.is_shutdown():
+	# 	matcher.Fusion()
+	# 	r.sleep()
  
